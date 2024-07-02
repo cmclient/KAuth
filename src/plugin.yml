@@ -1,0 +1,15 @@
+name: KAuth
+version: 1.0.0
+api-version: 1.13
+authors: [kuezese]
+main: pl.kuezese.auth.AuthPlugin
+commands:
+ login:
+  aliases: [log, l]
+ register:
+  aliases: [reg, r]
+ changepassword:
+  aliases: [changepass]
+ logout:
+  aliases: [logoff]
+ auth:

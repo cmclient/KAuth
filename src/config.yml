@@ -1,0 +1,42 @@
+mysql:
+  host: localhost
+  port: 3306
+  user: root
+  pass: ""
+  base: minecraft
+title:
+  enabled: true
+  messages:
+    login: "&7/login <your_password>"
+    register: "&7/register <password> <repeat_password>"
+    logged: "&aYou have successfully logged in."
+    registered: "&aYou have successfully registered."
+features:
+  experience-bar: true
+  pumpkin: true
+messages:
+  usage: " &8>> &cCorrect command usage: &7{USAGE}&c."
+  logged: " &8>> &aYou have successfully logged in."
+  changed: "&8>> &aPassword successfully changed."
+  registered: " &8>> &aYou have successfully registered."
+  unregistered: " &8>> &aYou have successfully unregistered."
+  logout: " &8>> &aYou have successfully logged out."
+  register: "&8>> &cRegister using the command &7/register <password> <repeat_password>&c."
+  login: " &8>> &cLog in using the command &7/login <password>&c."
+  session: " &8>> &aYou have been automatically logged in. &7(login session)"
+  wrong_password: " &8>> &cThe password provided is &7incorrect&c."
+  not_registered: " &8>> &cYour account is not &7registered&c."
+  not_logged: " &8>> &cYou are not &7logged in&c."
+  already_registered: " &8>> &cYour account is already registered, please log in."
+  already_logged: " &8>> &cYou are already &7logged in&c."
+  not_same_password: " &8>> &cThe passwords provided do not match."
+  correct_username: " &8>> &cYour correct username: &7{NAME}"
+  invalid_characters: " &8>> &cYour password must be between &74 and 32 characters long &cand consist of the following characters: &7a-ZA-Z0-9"
+  invalid_username: " &8>> &cYour username contains invalid characters."
+  no_perm: " &8>> &cYou do not have &7permission &cto use this &7command&c."
+  max_accounts: " &8>> &cYou have reached the maximum number of accounts for your IP."
+  time_left: "&8>> &cYour time to log in has expired."
+accounts:
+  max_reg_per_ip: 3
+listeners:
+  move: true
