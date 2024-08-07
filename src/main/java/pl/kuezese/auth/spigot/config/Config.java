@@ -81,7 +81,7 @@ public class Config {
         credentials = new SQL.Credentials(
                 DatabaseType.findByName(cfg.getString("database.type")), cfg.getString("database.host"),
                 cfg.getInt("database.port"), cfg.getString("database.database"),
-                cfg.getString("database.user"), cfg.getString("database.password"));
+                cfg.getString("database.username"), cfg.getString("database.password"));
 
         titleEnabled = cfg.getBoolean("title.enabled");
         titleLogin = cfg.getString("title.messages.login");
