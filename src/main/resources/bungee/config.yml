@@ -1,0 +1,14 @@
+debug: false
+database:
+  type: 'mysql' # Types: mysql, sqlite
+  host: localhost
+  port: 3306
+  database: minecraft
+  username: root
+  password: ''
+auth:
+  premium: false
+messages:
+  too-many-players: '&cCurrently, there are too many players trying to join the server.{N}&cPlease wait a moment and try again.'
+  already-checling: '&cYour connecting is already being checked.{N}&cPlease wait a moment and try again.'
+  failed-to-check: '&cFailed to verify your connection.{N}&cPlease wait a moment and try again.'

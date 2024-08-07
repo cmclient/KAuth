@@ -1,0 +1,4 @@
+name: KAuth
+main: pl.kuezese.auth.bungee.BungeePlugin
+author: kuezese
+version: 1.0.0-SNAPSHOT
