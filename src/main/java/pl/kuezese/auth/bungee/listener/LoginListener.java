@@ -34,7 +34,7 @@ public class LoginListener implements Listener {
 
         ResultData data = auth.getPremiumManager().getCache().get(username);
         if (data != null) {
-            handleConnection(connection, data.getResult(), true);
+            handleConnection(connection, data, true);
             return;
         }
 
@@ -46,26 +46,22 @@ public class LoginListener implements Listener {
 
         loginCache.put(username, true);
         ResultType result = auth.getPremiumManager().check(username);
+        data = new ResultData(username, result,
+                result == ResultType.PREMIUM ? getTimestamp(7, TimeUnit.DAYS) :
+                result == ResultType.NON_PREMIUM ? getTimestamp(30, TimeUnit.MINUTES) :
+                result == ResultType.ERROR ? getTimestamp(10, TimeUnit.SECONDS) : null);
 
-        switch (result) {
-            case PREMIUM:
-                auth.getPremiumManager().cache(new ResultData(username, result, getTimestamp(7, TimeUnit.DAYS)));
-                break;
-            case NON_PREMIUM:
-                auth.getPremiumManager().cache(new ResultData(username, result, getTimestamp(30, TimeUnit.MINUTES)));
-                break;
-            case ERROR:
-                auth.getPremiumManager().cache(new ResultData(username, result, getTimestamp(10, TimeUnit.SECONDS)));
-                break;
-        }
-
-        handleConnection(connection, result, false);
+        handleConnection(connection, data, false);
         loginCache.invalidate(username);
     }
 
-    private void handleConnection(PendingConnection connection, ResultType result, boolean cache) {
+    private void handleConnection(PendingConnection connection, ResultData data, boolean cache) {
+        ResultType result = data.getResult();
         if (auth.getAuthConfig().isDebug()) {
             auth.getLogger().info("Got result " + result.getName() + " for player " + connection.getName() + (cache ? " (cached)" : ""));
+        }
+        if (!cache) {
+            auth.getPremiumManager().cache(data);
         }
         if (result == ResultType.PREMIUM) {
             connection.setOnlineMode(true);
@@ -103,7 +99,7 @@ public class LoginListener implements Listener {
                 expireTime = now.plusNanos(time);
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported TimeUnit: " + unit);
+                throw new IllegalArgumentException("Unsupported unit: " + unit);
         }
 
         return Timestamp.valueOf(expireTime);

@@ -39,7 +39,9 @@ public class PremiumManager {
     public void cache(ResultData data) {
         if (!cache.containsKey(data.getName())) {
             cache.put(data.getName(), data);
-            auth.getSql().updateAsync("INSERT INTO `premium_cache` (`name`, `result`, `expire_date`) VALUES (?, ?, ?)", data.getName(), data.getResult().getName(), data.getExpireDate());
+            if (data.getExpireDate() != null) {
+                auth.getSql().updateAsync("INSERT INTO `premium_cache` (`name`, `result`, `expire_date`) VALUES (?, ?, ?)", data.getName(), data.getResult().getName(), data.getExpireDate());
+            }
         }
     }
 
