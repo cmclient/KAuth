@@ -82,20 +82,6 @@ public class SQL {
         });
     }
 
-    public Future<Void> updateAsync(String update) {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        executor.submit(() -> {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.executeUpdate(update);
-                future.complete(null);
-            } catch (Exception ex) {
-                logger.log(Level.SEVERE, "SQL Update Error", ex);
-                future.completeExceptionally(ex);
-            }
-        });
-        return future;
-    }
-
     public Future<Void> updateAsync(String update, Object... params) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
@@ -127,23 +113,25 @@ public class SQL {
     }
 
     public void disconnect() {
-        if (conn != null) {
-            try {
-                conn.close();
-            } catch (SQLException ex) {
-                logger.log(Level.SEVERE, "SQL Disconnect Error", ex);
-            }
+        if (conn == null) {
+            return;
+        }
+        try {
+            conn.close();
+        } catch (SQLException ex) {
+            logger.log(Level.SEVERE, "SQL Disconnect Error", ex);
         }
     }
 
     public boolean isConnected() {
-        if (conn == null)
+        if (conn == null) {
             return false;
-
+        }
         try {
             return !conn.isClosed();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (Exception ex) {
+            logger.log(Level.WARNING, "SQL Closed Error", ex);
+            return false;
         }
     }
 
