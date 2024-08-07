@@ -20,7 +20,9 @@ public class ConnectListener implements Listener {
     @EventHandler
     public void onConnect(ServerConnectedEvent event) {
         ProxiedPlayer player = event.getPlayer();
-        auth.getLogger().info("ServerConnectedEvent " + player.getName() + " " + (player.getPendingConnection().isOnlineMode() ? "online mode" : "offline mode"));
+        if (auth.getAuthConfig().isDebug()) {
+            auth.getLogger().info("ServerConnectedEvent " + player.getName() + " " + (player.getPendingConnection().isOnlineMode() ? "online mode" : "offline mode"));
+        }
         if (player.getPendingConnection().isOnlineMode()) {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(stream);
