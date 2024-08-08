@@ -102,15 +102,14 @@ public class SQL {
     @SneakyThrows
     public CompletableFuture<Boolean> recordExistsAsync(String query, Object... params) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
+        ResultSet rs = queryAsync(query, params).get();
 
-        queryAsync(query, params).thenAccept(rs -> {
-            try {
-                future.complete(rs.next());
-            } catch (SQLException ex) {
-                future.completeExceptionally(ex);
-                logger.log(Level.SEVERE, "SQL Query Error", ex);
-            }
-        }).get();
+        try {
+            future.complete(rs.next());
+        } catch (Exception ex) {
+            future.completeExceptionally(ex);
+            logger.log(Level.SEVERE, "SQL Query Error", ex);
+        }
 
         return future;
     }
@@ -141,7 +140,7 @@ public class SQL {
         }
         try {
             conn.close();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             logger.log(Level.SEVERE, "SQL Disconnect Error", ex);
         }
     }
