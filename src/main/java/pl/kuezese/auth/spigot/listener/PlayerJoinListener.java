@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.potion.PotionEffectType;
 import pl.kuezese.auth.shared.helper.ChatHelper;
 import pl.kuezese.auth.spigot.SpigotPlugin;
 import pl.kuezese.auth.spigot.object.User;
@@ -44,6 +45,10 @@ public class PlayerJoinListener implements Listener {
         if (u == null) {
             u = auth.getUserManager().create(p);
         }
+
+        p.removePotionEffect(PotionEffectType.BLINDNESS);
+        p.setLevel(0);
+        p.setExp(0);
 
         if (u.shouldAutoLogin(p)) {
             u.setLogged(true);
