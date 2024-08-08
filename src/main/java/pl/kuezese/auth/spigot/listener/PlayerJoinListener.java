@@ -44,6 +44,18 @@ public class PlayerJoinListener implements Listener {
         if (u == null) {
             u = auth.getUserManager().create(p);
         }
-        new LoginTask(auth, p, u).runTaskTimer(auth, 5L, 20L);
+
+        if (u.shouldAutoLogin(p)) {
+            u.setLogged(true);
+            u.updateLastLogin(p);
+            ChatHelper.send(p, auth.getAuthConfig().getMsgSession());
+            return;
+        }
+
+        u.setLastJoin(System.currentTimeMillis());
+
+        if (!auth.getAuthConfig().isPremiumAuth()) {
+            new LoginTask(auth, p, u).runTaskTimer(auth, 5L, 20L);
+        }
     }
 }

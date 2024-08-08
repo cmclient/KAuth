@@ -28,6 +28,7 @@ messages:
   change-password-usage: '/changepassword <old_password> <new_password>'
   cant-use-as-premium: ' &8>> &cYou cannot use this command as premium player.'
   logged: ' &8>> &aYou have successfully logged in.'
+  logged-premium: ' &8>> &aYou have been automatically logged in. &7(premium account)'
   changed: '&8>> &aPassword successfully changed.'
   registered: ' &8>> &aYou have successfully registered.'
   unregistered: ' &8>> &aYou have successfully unregistered.'

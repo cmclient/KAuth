@@ -6,6 +6,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import pl.kuezese.auth.shared.helper.ChatHelper;
 import pl.kuezese.auth.spigot.SpigotPlugin;
 import pl.kuezese.auth.spigot.object.User;
+import pl.kuezese.auth.spigot.task.LoginTask;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -21,10 +22,20 @@ public class AuthMessageListener implements PluginMessageListener {
     public void onPluginMessageReceived(String s, Player player, byte[] bytes) {
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(bytes));
         try {
+            boolean onlineMode = in.readBoolean();
             String username = in.readUTF();
             UUID uuid = UUID.fromString(in.readUTF());
             if (auth.getAuthConfig().isDebug()) {
-                auth.getLogger().info("Got auth data " + Arrays.toString(new String[]{username, uuid.toString()}));
+                auth.getLogger().info("Got auth data " + Arrays.toString(new String[]{String.valueOf(onlineMode), username, uuid.toString()}));
+            }
+            User user = auth.getUserManager().get(username);
+            if (user == null) {
+                player.kickPlayer(ChatHelper.color("&cFailed to verify session."));
+                return;
+            }
+            if (!onlineMode) {
+                new LoginTask(auth, player, user).runTaskTimer(auth, 0L, 20L);
+                return;
             }
             if (!username.equals(player.getName())) {
                 player.kickPlayer(ChatHelper.color("&cFailed to verify session."));
@@ -34,12 +45,9 @@ public class AuthMessageListener implements PluginMessageListener {
                 player.kickPlayer(ChatHelper.color("&cFailed to verify session."));
                 return;
             }
-            User user = auth.getUserManager().get(username);
-            if (user == null) {
-                player.kickPlayer(ChatHelper.color("&cFailed to verify session."));
-                return;
-            }
             user.setPremium(true);
+            user.setLastLogin(0L);
+            player.sendMessage(ChatHelper.color(auth.getAuthConfig().getMsgLoggedPremium()));
         } catch (Exception ex) {
             player.kickPlayer(ChatHelper.color("&cFailed to verify session."));
         }

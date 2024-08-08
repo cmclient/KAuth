@@ -20,7 +20,6 @@ public class LoginTask extends BukkitRunnable {
     private final User user;
     private int lvl = 30;
     private float exp = 1.F;
-    private int i;
 
     @Override
     public void run() {
@@ -33,17 +32,6 @@ public class LoginTask extends BukkitRunnable {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
             cancel();
             return;
-        }
-
-        if (i++ != 0) {
-            if (user.shouldAutoLogin(player)) {
-                user.setLogged(true);
-                user.updateLastLogin(player);
-                ChatHelper.send(player, auth.getAuthConfig().getMsgSession());
-                return;
-            }
-
-            user.setLastJoin(System.currentTimeMillis());
         }
 
         if (auth.getAuthConfig().isTitleEnabled() && user.getLastJoin() + 3000L < System.currentTimeMillis()) {

@@ -23,19 +23,18 @@ public class ConnectListener implements Listener {
         if (auth.getAuthConfig().isDebug()) {
             auth.getLogger().info("ServerConnectedEvent " + player.getName() + " " + (player.getPendingConnection().isOnlineMode() ? "online mode" : "offline mode"));
         }
-        if (player.getPendingConnection().isOnlineMode()) {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(stream);
-            try {
-                out.writeUTF(player.getName());
-                out.writeUTF(player.getUniqueId().toString());
-            } catch (Exception ex) {
-                auth.getLogger().log(Level.SEVERE, "Failed to create auth data", ex);
-            }
-            if (auth.getAuthConfig().isDebug()) {
-                auth.getLogger().info("Sending auth data " + Arrays.toString(new String[]{player.getName(), player.getUniqueId().toString()}));
-            }
-            event.getServer().sendData("kauth:premiumlogin", stream.toByteArray());
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(stream);
+        try {
+            out.writeBoolean(player.getPendingConnection().isOnlineMode());
+            out.writeUTF(player.getName());
+            out.writeUTF(player.getUniqueId().toString());
+        } catch (Exception ex) {
+            auth.getLogger().log(Level.SEVERE, "Failed to create auth data", ex);
         }
+        if (auth.getAuthConfig().isDebug()) {
+            auth.getLogger().info("Sending auth data " + Arrays.toString(new String[]{String.valueOf(player.getPendingConnection().isOnlineMode()), player.getName(), player.getUniqueId().toString()}));
+        }
+        event.getServer().sendData("kauth:premiumlogin", stream.toByteArray());
     }
 }

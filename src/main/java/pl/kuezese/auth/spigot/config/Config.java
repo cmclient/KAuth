@@ -39,6 +39,7 @@ public class Config {
     private String msgAlreadyLogged;
     private String msgWrongPassword;
     private String msgLogged;
+    private String msgLoggedPremium;
     private String msgNotSamePassword;
     private String msgRegistered;
     private String msgUnregistered;
@@ -102,6 +103,7 @@ public class Config {
         msgAlreadyLogged = cfg.getString("messages.already-logged");
         msgWrongPassword = cfg.getString("messages.wrong-password");
         msgLogged = cfg.getString("messages.logged");
+        msgLoggedPremium = cfg.getString("messages.logged-premium");
         msgNotSamePassword = cfg.getString("messages.not-same-password");
         msgRegistered = cfg.getString("messages.registered");
         msgUnregistered = cfg.getString("messages.unregistered");
