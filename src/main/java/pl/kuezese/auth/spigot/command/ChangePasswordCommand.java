@@ -39,7 +39,7 @@ public class ChangePasswordCommand implements CommandExecutor {
         if (!u.getPassword().equals(Hashing.md5().hashBytes(args[0].getBytes(StandardCharsets.UTF_8)).toString())) {
             return ChatHelper.send(p, auth.getAuthConfig().getMsgWrongPassword());
         }
-        u.setPassword(Hashing.md5().hashBytes(args[1].getBytes(StandardCharsets.UTF_8)).toString());
+        u.setPassword(Hashing.md5().hashBytes(args[1].getBytes(StandardCharsets.UTF_8)).toString(), true);
         ChatHelper.send(p, auth.getAuthConfig().getMsgChangedPassword());
         return true;
     }

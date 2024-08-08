@@ -7,7 +7,7 @@ database:
   username: root
   password: ''
 autopurge:
-  days: 60 # automatically remove accounts not logged since x days, 0 to disable
+  days: 90 # automatically remove accounts not logged since x days, 0 to disable
 title:
   enabled: true
   messages:

@@ -12,6 +12,8 @@ import pl.kuezese.auth.spigot.helper.TitleHelper;
 import pl.kuezese.auth.spigot.object.User;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.regex.Pattern;
 
 public class RegisterCommand implements CommandExecutor {
@@ -49,9 +51,11 @@ public class RegisterCommand implements CommandExecutor {
         if (auth.getAuthConfig().getMaxAccounts() != 0 && auth.getUserManager().getByIp(p.getAddress().getAddress().getHostAddress()) >= auth.getAuthConfig().getMaxAccounts()) {
             return ChatHelper.send(p, auth.getAuthConfig().getMsgMaxAccounts());
         }
+        u.setRegisterDate(Timestamp.from(Instant.now()));
         u.setPassword(Hashing.md5().hashBytes(args[1].getBytes(StandardCharsets.UTF_8)).toString());
         u.setLogged(true);
         u.updateLastLogin(p);
+        u.insert();
         ChatHelper.send(p, auth.getAuthConfig().getMsgRegistered());
         if (auth.getAuthConfig().isTitleEnabled()) {
             TitleHelper.title(p, "", auth.getAuthConfig().getTitleRegistered(), 10, 30, 10);

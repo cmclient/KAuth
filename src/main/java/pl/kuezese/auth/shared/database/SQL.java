@@ -2,6 +2,7 @@ package pl.kuezese.auth.shared.database;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import pl.kuezese.auth.shared.type.DatabaseType;
 
 import java.io.File;
@@ -98,6 +99,22 @@ public class SQL {
         return future;
     }
 
+    @SneakyThrows
+    public CompletableFuture<Boolean> recordExistsAsync(String query, Object... params) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        queryAsync(query, params).thenAccept(rs -> {
+            try {
+                future.complete(rs.next());
+            } catch (SQLException ex) {
+                future.completeExceptionally(ex);
+                logger.log(Level.SEVERE, "SQL Query Error", ex);
+            }
+        }).get();
+
+        return future;
+    }
+
     public CompletableFuture<ResultSet> queryAsync(String query, Object... params) {
         CompletableFuture<ResultSet> future = new CompletableFuture<>();
 
@@ -110,7 +127,7 @@ public class SQL {
                 ResultSet resultSet = stmt.executeQuery();
                 future.complete(resultSet);
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, "SQL Update Error", ex);
+                logger.log(Level.SEVERE, "SQL Query Error", ex);
                 future.completeExceptionally(ex);
             }
         });

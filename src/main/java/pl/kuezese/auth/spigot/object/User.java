@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.logging.Level;
 
 @Getter @Setter
 public class User {
@@ -36,7 +37,6 @@ public class User {
         registerIp = null;
         lastIp = null;
         lastJoin = Timestamp.from(Instant.now());
-        insert();
     }
 
     public User(Player player) {
@@ -46,7 +46,6 @@ public class User {
         registerIp = player.getAddress().getAddress().getHostAddress();
         lastIp = registerIp;
         lastJoin = Timestamp.from(Instant.now());
-        insert();
     }
 
     public User(ResultSet rs) throws SQLException {
@@ -58,10 +57,12 @@ public class User {
         lastIp = rs.getString("lastIp");
     }
 
-    private void insert() {
-        String sql = "INSERT INTO `auth`(`id`, `name`, `password`, `registerDate`, `loginDate`, `registerIp`, `lastIp`) VALUES (NULL, ?, ?, ?, ?, ?, ?)";
+    public void insert() {
+        String checkSql = "SELECT 1 FROM `auth` WHERE `name` = ?";
+        String insertSql = "INSERT INTO `auth`(`id`, `name`, `password`, `registerDate`, `loginDate`, `registerIp`, `lastIp`) VALUES (NULL, ?, ?, ?, ?, ?, ?)";
 
-        Object[] params = new Object[]{
+        Object[] checkParams = new Object[]{name};
+        Object[] insertParams = new Object[]{
                 name,
                 password,
                 registerDate,
@@ -70,7 +71,14 @@ public class User {
                 lastIp
         };
 
-        SpigotPlugin.getInstance().getSql().updateAsync(sql, params);
+        SpigotPlugin.getInstance().getSql().recordExistsAsync(checkSql, checkParams).thenAccept(exists -> {
+            if (!exists) {
+                SpigotPlugin.getInstance().getSql().updateAsync(insertSql, insertParams);
+            }
+        }).exceptionally(ex -> {
+            SpigotPlugin.getInstance().getLogger().log(Level.SEVERE, "Failed to insert user " + name, ex);
+            return null;
+        });
     }
 
     public void updateLastLogin(Player player) {
@@ -103,8 +111,10 @@ public class User {
         return !Instant.now().isAfter(sessionEnd);
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password, boolean update) {
         this.password = password;
-        SpigotPlugin.getInstance().getSql().updateAsync("UPDATE `auth` SET `password` = ? WHERE `name` = ?", password, getName());
+        if (update) {
+            SpigotPlugin.getInstance().getSql().updateAsync("UPDATE `auth` SET `password` = ? WHERE `name` = ?", password, name);
+        }
     }
 }
