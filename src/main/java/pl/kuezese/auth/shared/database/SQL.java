@@ -42,7 +42,7 @@ public class SQL {
                             credentials.getUser(), credentials.getPassword()
                     );
                     scheduler.scheduleAtFixedRate(
-                            () -> execute("SELECT CURTIME()"), // Keepalive query
+                            () -> executeAsync("SELECT CURTIME()"), // Keepalive query
                             0, // Initial delay of 0 seconds
                             15, // Run every 15 seconds
                             TimeUnit.SECONDS // Time unit for the interval
@@ -63,22 +63,19 @@ public class SQL {
         }
     }
 
-    public void execute(String query) {
-        try {
-            conn.createStatement().execute(query);
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, "SQL Execute Error", ex);
-        }
-    }
-
-    public void update(String update) {
+    public Future<Void> executeAsync(String query) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
         executor.submit(() -> {
             try {
-                conn.createStatement().executeUpdate(update);
+                conn.createStatement().execute(query);
+                future.complete(null);
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, "SQL Update Error", ex);
+                logger.log(Level.SEVERE, "SQL Execute Error", ex);
+                future.completeExceptionally(ex);
             }
         });
+
+        return future;
     }
 
     public Future<Void> updateAsync(String update, Object... params) {
@@ -101,14 +98,24 @@ public class SQL {
         return future;
     }
 
-    public void query(String query, QueryCallback callback) {
+    public CompletableFuture<ResultSet> queryAsync(String query, Object... params) {
+        CompletableFuture<ResultSet> future = new CompletableFuture<>();
+
         executor.submit(() -> {
-            try (ResultSet rs = conn.createStatement().executeQuery(query)) {
-                callback.receivedResultSet(rs);
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                for (int i = 0; i < params.length; i++) {
+                    stmt.setObject(i + 1, params[i]);
+                }
+
+                ResultSet resultSet = stmt.executeQuery();
+                future.complete(resultSet);
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, "SQL Query Error", ex);
+                logger.log(Level.SEVERE, "SQL Update Error", ex);
+                future.completeExceptionally(ex);
             }
         });
+
+        return future;
     }
 
     public void disconnect() {
@@ -132,9 +139,5 @@ public class SQL {
             logger.log(Level.WARNING, "SQL Closed Error", ex);
             return false;
         }
-    }
-
-    public interface QueryCallback {
-        void receivedResultSet(ResultSet rs);
     }
 }

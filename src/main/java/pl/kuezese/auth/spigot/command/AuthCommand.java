@@ -57,7 +57,6 @@ public class AuthCommand implements CommandExecutor {
                     return ChatHelper.send(sender, auth.getAuthConfig().getMsgInvalidCharacters());
                 }
                 u.setPassword(Hashing.md5().hashBytes(args[2].getBytes(StandardCharsets.UTF_8)).toString());
-                u.setRegistered(true);
                 return ChatHelper.send(sender, auth.getAuthConfig().getMsgRegistered());
             }
             case "unregister":
@@ -73,7 +72,6 @@ public class AuthCommand implements CommandExecutor {
                 if (u.isPremium())  {
                     return ChatHelper.send(sender, auth.getAuthConfig().getMsgCantUseAsPremium());
                 }
-                u.setRegistered(false);
                 u.setLogged(false);
                 u.setPassword(null);
                 Player p = auth.getServer().getPlayer(u.getName());

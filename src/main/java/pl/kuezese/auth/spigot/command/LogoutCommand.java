@@ -18,7 +18,10 @@ public class LogoutCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Player p = (Player) sender;
+        Player p = sender instanceof Player ? (Player) sender : null;
+        if (p == null) {
+            return ChatHelper.send(sender, auth.getAuthConfig().getMsgCantUseInConsole());
+        }
         User u = auth.getUserManager().get(p.getName());
         if (u.isPremium())  {
             return ChatHelper.send(p, auth.getAuthConfig().getMsgCantUseAsPremium());
@@ -30,7 +33,7 @@ public class LogoutCommand implements CommandExecutor {
             return ChatHelper.send(p, auth.getAuthConfig().getMsgNotLogged());
         }
         u.setLogged(false);
-        u.setLastLogin(0);
+        u.removeLastLogin();
         p.kickPlayer(ChatHelper.color(auth.getAuthConfig().getMsgLogout()));
         return true;
     }

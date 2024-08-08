@@ -9,6 +9,7 @@ import pl.kuezese.auth.spigot.config.Config;
 import pl.kuezese.auth.spigot.listener.*;
 import pl.kuezese.auth.spigot.manager.UserManager;
 import pl.kuezese.auth.spigot.message.AuthMessageListener;
+import pl.kuezese.auth.spigot.task.PurgeTask;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -34,10 +35,26 @@ public class SpigotPlugin extends JavaPlugin {
         if ((sql = new SQL(getLogger(), authConfig.getCredentials())).connect(getDataFolder())) {
             switch (authConfig.getCredentials().getType()) {
                 case MYSQL:
-                    sql.updateAsync("CREATE TABLE IF NOT EXISTS `auth` (`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, `name` varchar(32) NOT NULL, `password` text NULL, `registered` int(1), `registerIp` text NOT NULL, `lastIp` text NOT NULL, `lastLogin` BIGINT(22) NOT NULL);").get();
+                    sql.updateAsync("CREATE TABLE IF NOT EXISTS `auth` (" +
+                            "`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, " +
+                            "`name` varchar(16) NOT NULL, " +
+                            "`password` varchar(32) NULL, " +
+                            "`registerDate` DATETIME NULL, " +
+                            "`loginDate` DATETIME NULL, " +
+                            "`registerIp` varchar(39) NULL, " +
+                            "`lastIp` varchar(39) NULL" +
+                            ");").get();
                     break;
                 case SQLITE:
-                    sql.updateAsync("CREATE TABLE IF NOT EXISTS auth (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, password TEXT, registered INTEGER, registerIp TEXT NOT NULL, lastIp TEXT NOT NULL, lastLogin INTEGER NOT NULL);").get();
+                    sql.updateAsync("CREATE TABLE IF NOT EXISTS auth (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                            "name TEXT NOT NULL, " +
+                            "password TEXT, " +
+                            "registerDate DATETIME, " +
+                            "loginDate DATETIME, " +
+                            "registerIp TEXT, " +
+                            "lastIp TEXT" +
+                            ");").get();
                     break;
             }
             (userManager = new UserManager(this)).load(this);
@@ -46,14 +63,12 @@ public class SpigotPlugin extends JavaPlugin {
             return;
         }
 
-        getLogger().info("Loading commands...");
         new LoginCommand(this);
         new RegisterCommand(this);
         new LogoutCommand(this);
         new ChangePasswordCommand(this);
         new AuthCommand(this);
 
-        getLogger().info("Loading listeners...");
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerChatListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerCommandListener(this), this);
@@ -68,6 +83,11 @@ public class SpigotPlugin extends JavaPlugin {
 
         if (authConfig.isPremiumAuth()) {
             getServer().getMessenger().registerIncomingPluginChannel(this, "kauth:premiumlogin", new AuthMessageListener(this));
+        }
+
+        if (authConfig.getAutoPurgeDays() != 0) {
+            getLogger().info("Removing accounts inactive for " + authConfig.getAutoPurgeDays() + " days");
+            new PurgeTask(this).runTaskTimerAsynchronously(this, 5 * 20L, 60 * 20L);
         }
 
         getLogger().info("Plugin " + getDescription().getFullName() + " by " + getDescription().getAuthors().get(0) + " has been loaded successfully.");

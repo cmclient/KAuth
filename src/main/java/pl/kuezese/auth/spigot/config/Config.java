@@ -7,6 +7,7 @@ import pl.kuezese.auth.shared.type.DatabaseType;
 import pl.kuezese.auth.spigot.SpigotPlugin;
 
 import java.io.File;
+import java.time.Duration;
 
 @Getter
 public class Config {
@@ -16,6 +17,9 @@ public class Config {
 
     /** Database Connection **/
     private SQL.Credentials credentials;
+
+    /** Auto Purge Configuration **/
+    private int autoPurgeDays;
 
     /** Title Configuration **/
     private boolean titleEnabled;
@@ -30,6 +34,7 @@ public class Config {
 
     /** Messages **/
     private String msgUsage;
+    private String msgCantUseInConsole;
     private String msgLoginUsage;
     private String msgRegisterUsage;
     private String msgChangePasswordUsage;
@@ -58,6 +63,10 @@ public class Config {
     private boolean premiumAuth;
     private int maxAccounts;
 
+    /** Sessions Configuration **/
+    private boolean sessionsEnabled;
+    private Duration sessionsDuration;
+
     /** Permissions Configuration **/
     private String adminPermission;
 
@@ -84,6 +93,8 @@ public class Config {
                 cfg.getInt("database.port"), cfg.getString("database.database"),
                 cfg.getString("database.username"), cfg.getString("database.password"));
 
+        autoPurgeDays = cfg.getInt("autopurge.days");
+
         titleEnabled = cfg.getBoolean("title.enabled");
         titleLogin = cfg.getString("title.messages.login");
         titleRegister = cfg.getString("title.messages.register");
@@ -97,6 +108,7 @@ public class Config {
         msgLoginUsage = cfg.getString("messages.login-usage");
         msgRegisterUsage = cfg.getString("messages.register-usage");
         msgChangePasswordUsage = cfg.getString("messages.change-password-usage");
+        msgCantUseInConsole = cfg.getString("messages.cant-use-in-console");
         msgCantUseAsPremium = cfg.getString("messages.cant-use-as-premium");
         msgNotRegistered = cfg.getString("messages.not-registered");
         msgNotLogged = cfg.getString("messages.not-logged");
@@ -121,6 +133,9 @@ public class Config {
 
         premiumAuth = cfg.getBoolean("auth.premium");
         maxAccounts = cfg.getInt("auth.max-accounts");
+
+        sessionsEnabled = cfg.getBoolean("sessions.enabled");
+        sessionsDuration = Duration.ofMinutes(cfg.getInt("sessions.duration"));
 
         adminPermission = cfg.getString("permissions.admin");
 

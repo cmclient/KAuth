@@ -12,6 +12,9 @@ import pl.kuezese.auth.spigot.SpigotPlugin;
 import pl.kuezese.auth.spigot.helper.TitleHelper;
 import pl.kuezese.auth.spigot.object.User;
 
+import java.time.Duration;
+import java.time.Instant;
+
 @RequiredArgsConstructor
 public class LoginTask extends BukkitRunnable {
 
@@ -34,7 +37,7 @@ public class LoginTask extends BukkitRunnable {
             return;
         }
 
-        if (auth.getAuthConfig().isTitleEnabled() && user.getLastJoin() + 3000L < System.currentTimeMillis()) {
+        if (auth.getAuthConfig().isTitleEnabled() && Duration.between(user.getLastJoin().toInstant(), Instant.now()).getSeconds() > 3) {
             if (!user.isRegistered()) {
                 TitleHelper.title(player, "", auth.getAuthConfig().getTitleRegister(), 0, 30, 10);
             } else {

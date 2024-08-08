@@ -46,7 +46,7 @@ public class PremiumManager {
     }
 
     public void load() {
-        auth.getSql().query("SELECT * FROM `premium_cache`", rs -> {
+        auth.getSql().queryAsync("SELECT * FROM `premium_cache`").thenAccept(rs -> {
             try {
                 while (rs.next()) {
                     ResultData data = new ResultData(rs);

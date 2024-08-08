@@ -5,67 +5,69 @@ import lombok.Setter;
 import org.bukkit.entity.Player;
 import pl.kuezese.auth.spigot.SpigotPlugin;
 
+import javax.annotation.Nullable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
 
 @Getter @Setter
 public class User {
 
     private final String name;
-    private boolean registered;
     private boolean logged;
     private String password;
+    @Nullable
+    private Timestamp registerDate;
+    @Nullable
+    private Timestamp loginDate;
+    private Timestamp lastJoin;
+    @Nullable
     private final String registerIp;
+    @Nullable
     private String lastIp;
-    private long lastJoin;
-    private long lastLogin;
     private boolean premium;
 
     public User(String name) {
         this.name = name;
-        registered = false;
         logged = false;
         password = null;
-        registerIp = "127.0.0.1";
-        lastIp = registerIp;
-        lastJoin = 0L;
-        lastLogin = 0L;
+        registerIp = null;
+        lastIp = null;
+        lastJoin = Timestamp.from(Instant.now());
         insert();
     }
 
     public User(Player player) {
         name = player.getName();
-        registered = false;
         logged = false;
         password = null;
         registerIp = player.getAddress().getAddress().getHostAddress();
         lastIp = registerIp;
-        lastJoin = System.currentTimeMillis();
-        lastLogin = System.currentTimeMillis();
+        lastJoin = Timestamp.from(Instant.now());
         insert();
     }
 
     public User(ResultSet rs) throws SQLException {
         name = rs.getString("name");
-        registered = (rs.getInt("registered") == 1);
         password = rs.getString("password");
+        registerDate = rs.getTimestamp("registerDate");
+        loginDate = rs.getTimestamp("loginDate");
         registerIp = rs.getString("registerIp");
         lastIp = rs.getString("lastIp");
-        lastLogin = rs.getLong("lastLogin");
     }
 
     private void insert() {
-        // Prepare SQL query with placeholders
-        String sql = "INSERT INTO `auth`(`id`, `name`, `password`, `registered`, `registerIp`, `lastIp`, `lastLogin`) VALUES (NULL, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO `auth`(`id`, `name`, `password`, `registerDate`, `loginDate`, `registerIp`, `lastIp`) VALUES (NULL, ?, ?, ?, ?, ?, ?)";
 
-        // Prepare parameters for the query
         Object[] params = new Object[]{
-                getName(),
-                getPassword() != null ? getPassword() : null,
-                isRegistered() ? 1 : 0,
+                name,
+                password,
+                registerDate,
+                loginDate,
                 registerIp,
-                lastIp,
-                lastLogin
+                lastIp
         };
 
         SpigotPlugin.getInstance().getSql().updateAsync(sql, params);
@@ -73,22 +75,32 @@ public class User {
 
     public void updateLastLogin(Player player) {
         lastIp = player.getAddress().getAddress().getHostAddress();
-        lastLogin = System.currentTimeMillis();
-        SpigotPlugin.getInstance().getSql().updateAsync("UPDATE `auth` SET `lastIp` = ?, `lastLogin` = ? WHERE `name` = ?", lastIp, lastLogin, getName());
+        loginDate = Timestamp.from(Instant.now());
+        SpigotPlugin.getInstance().getSql().updateAsync("UPDATE `auth` SET `lastIp` = ?, `loginDate` = ? WHERE `name` = ?", lastIp, loginDate, name);
     }
 
-    public void setLastLogin(long time) {
-        this.lastLogin = time;
-        SpigotPlugin.getInstance().getSql().updateAsync("UPDATE `auth` SET `lastLogin` = ? WHERE `name` = ?", lastLogin, getName());
+    public void removeLastLogin() {
+        loginDate = null;
+        SpigotPlugin.getInstance().getSql().updateAsync("UPDATE `auth` SET `loginDate` = ? WHERE `name` = ?", null, name);
+    }
+
+    public boolean isRegistered() {
+        return password != null;
     }
 
     public boolean shouldAutoLogin(Player player) {
-        return !premium && registered && !logged && lastIp.equals(player.getAddress().getAddress().getHostAddress()) && (lastLogin + 86400000L) > System.currentTimeMillis();
-    }
+        if (!isRegistered() || premium || logged || lastIp == null || loginDate == null) {
+            return false;
+        }
 
-    public void setRegistered(boolean registered) {
-        this.registered = registered;
-        SpigotPlugin.getInstance().getSql().updateAsync("UPDATE `auth` SET `registered` = ? WHERE `name` = ?", registered ? 1 : 0, getName());
+        String currentPlayerIp = player.getAddress().getAddress().getHostAddress();
+        if (!lastIp.equals(currentPlayerIp)) {
+            return false;
+        }
+
+        Duration sessionsDuration = SpigotPlugin.getInstance().getAuthConfig().getSessionsDuration();
+        Instant sessionEnd = loginDate.toInstant().plus(sessionsDuration);
+        return !Instant.now().isAfter(sessionEnd);
     }
 
     public void setPassword(String password) {

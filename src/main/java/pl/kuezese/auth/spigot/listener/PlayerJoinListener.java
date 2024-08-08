@@ -13,6 +13,8 @@ import pl.kuezese.auth.spigot.SpigotPlugin;
 import pl.kuezese.auth.spigot.object.User;
 import pl.kuezese.auth.spigot.task.LoginTask;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -48,16 +50,16 @@ public class PlayerJoinListener implements Listener {
 
         p.removePotionEffect(PotionEffectType.BLINDNESS);
         p.setLevel(0);
-        p.setExp(0);
+        p.setExp(0.0F);
 
-        if (u.shouldAutoLogin(p)) {
+        if (auth.getAuthConfig().isSessionsEnabled() && u.shouldAutoLogin(p)) {
             u.setLogged(true);
             u.updateLastLogin(p);
             ChatHelper.send(p, auth.getAuthConfig().getMsgSession());
             return;
         }
 
-        u.setLastJoin(System.currentTimeMillis());
+        u.setLastJoin(Timestamp.from(Instant.now()));
 
         if (!auth.getAuthConfig().isPremiumAuth()) {
             new LoginTask(auth, p, u).runTaskTimer(auth, 5L, 20L);

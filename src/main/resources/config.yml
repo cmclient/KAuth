@@ -6,6 +6,8 @@ database:
   database: minecraft
   username: root
   password: ''
+autopurge:
+  days: 60 # automatically remove accounts not logged since x days, 0 to disable
 title:
   enabled: true
   messages:
@@ -19,6 +21,9 @@ features:
 auth:
   premium: false
   max-accounts: 5
+sessions:
+  enabled: true
+  duration: 1440 # duration in minutes
 permissions:
   admin: 'kauth.admin'
 messages:
@@ -26,6 +31,7 @@ messages:
   login-usage: '/login <password>'
   register-usage: '/register <password> <confirm_password>'
   change-password-usage: '/changepassword <old_password> <new_password>'
+  cant-use-in-console: '&cYou cannot use this command in console.'
   cant-use-as-premium: ' &8>> &cYou cannot use this command as premium player.'
   logged: ' &8>> &aYou have successfully logged in.'
   logged-premium: ' &8>> &aYou have been automatically logged in. &7(premium account)'

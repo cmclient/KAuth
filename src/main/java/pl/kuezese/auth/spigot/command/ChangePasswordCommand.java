@@ -22,7 +22,10 @@ public class ChangePasswordCommand implements CommandExecutor {
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Player p = (Player) sender;
+        Player p = sender instanceof Player ? (Player) sender : null;
+        if (p == null) {
+            return ChatHelper.send(sender, auth.getAuthConfig().getMsgCantUseInConsole());
+        }
         if (args.length < 2) {
             return ChatHelper.send(p, auth.getAuthConfig().getMsgUsage().replace("{USAGE}", auth.getAuthConfig().getMsgChangePasswordUsage()));
         }
