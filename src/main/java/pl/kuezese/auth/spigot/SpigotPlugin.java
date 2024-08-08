@@ -58,7 +58,7 @@ public class SpigotPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerChatListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerCommandListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerQuitListener(this), this);
-        if (!authConfig.isBlockMove()) {
+        if (authConfig.isMoveListener()) {
             getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
         }
         getServer().getPluginManager().registerEvents(new PlayerDropItemListener(this), this);

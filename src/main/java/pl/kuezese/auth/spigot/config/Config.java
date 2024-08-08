@@ -64,7 +64,7 @@ public class Config {
     private String msgMaxAccounts;
 
     /** Listeners Configuration **/
-    private boolean blockMove;
+    private boolean moveListener;
 
     public void load(SpigotPlugin auth) {
         if (!auth.getDataFolder().exists() && auth.getDataFolder().mkdirs()) {
@@ -122,6 +122,6 @@ public class Config {
 
         adminPermission = cfg.getString("permissions.admin");
 
-        blockMove = cfg.getBoolean("listeners.move");
+        moveListener = cfg.getBoolean("listeners.move");
     }
 }

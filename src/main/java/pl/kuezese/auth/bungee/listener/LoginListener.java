@@ -52,7 +52,6 @@ public class LoginListener implements Listener {
                 result == ResultType.ERROR ? getTimestamp(10, TimeUnit.SECONDS) : null);
 
         handleConnection(connection, data, false);
-        loginCache.invalidate(username);
     }
 
     private void handleConnection(PendingConnection connection, ResultData data, boolean cache) {
@@ -62,6 +61,7 @@ public class LoginListener implements Listener {
         }
         if (!cache) {
             auth.getPremiumManager().cache(data);
+            loginCache.invalidate(connection.getName());
         }
         if (result == ResultType.PREMIUM) {
             connection.setOnlineMode(true);

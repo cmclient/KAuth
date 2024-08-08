@@ -35,32 +35,30 @@ public class LoginTask extends BukkitRunnable {
             return;
         }
 
-        if (i == 0) {
+        if (i++ != 0) {
             if (user.shouldAutoLogin(player)) {
                 user.setLogged(true);
                 user.updateLastLogin(player);
                 ChatHelper.send(player, auth.getAuthConfig().getMsgSession());
                 return;
+            }
+
+            user.setLastJoin(System.currentTimeMillis());
+        }
+
+        if (auth.getAuthConfig().isTitleEnabled() && user.getLastJoin() + 3000L < System.currentTimeMillis()) {
+            if (!user.isRegistered()) {
+                TitleHelper.title(player, "", auth.getAuthConfig().getTitleRegister(), 0, 30, 10);
             } else {
-                user.setLastJoin(System.currentTimeMillis());
+                TitleHelper.title(player, "", auth.getAuthConfig().getTitleLogin(), 0, 30, 10);
             }
         }
 
-        if (i++ != 1 && !user.isPremium()) {
-            if (auth.getAuthConfig().isTitleEnabled() && user.getLastJoin() + 3000L < System.currentTimeMillis()) {
-                if (!user.isRegistered()) {
-                    TitleHelper.title(player, "", auth.getAuthConfig().getTitleRegister(), 0, 30, 10);
-                } else {
-                    TitleHelper.title(player, "", auth.getAuthConfig().getTitleLogin(), 0, 30, 10);
-                }
-            }
-
-            if (lvl % 5 == 0) {
-                if (!user.isRegistered()) {
-                    ChatHelper.send(player, auth.getAuthConfig().getMsgRegister());
-                } else if (!user.isLogged()) {
-                    ChatHelper.send(player, auth.getAuthConfig().getMsgLogin());
-                }
+        if (lvl % 5 == 0) {
+            if (!user.isRegistered()) {
+                ChatHelper.send(player, auth.getAuthConfig().getMsgRegister());
+            } else if (!user.isLogged()) {
+                ChatHelper.send(player, auth.getAuthConfig().getMsgLogin());
             }
         }
 
