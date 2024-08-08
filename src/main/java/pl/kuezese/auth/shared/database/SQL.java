@@ -34,10 +34,9 @@ public class SQL {
         logger.info("Connecting to " + credentials.getType() + " database...");
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-
             switch (credentials.getType()) {
                 case MYSQL:
+                    Class.forName("com.mysql.jdbc.Driver");
                     conn = DriverManager.getConnection(
                             "jdbc:mysql://" + credentials.getHost() + ":" + credentials.getPort() + "/" + credentials.getDatabase(),
                             credentials.getUser(), credentials.getPassword()
