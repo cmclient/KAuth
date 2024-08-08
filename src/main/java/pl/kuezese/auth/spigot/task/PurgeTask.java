@@ -40,18 +40,18 @@ public class PurgeTask extends BukkitRunnable {
                     users.put(user.getName(), daysAgo);
                 }
 
-                if (!users.isEmpty() && auth.getAuthConfig().isDebug()) {
-                    auth.getLogger().info("Found " + users.size() + " players to purge");
-                    auth.getLogger().info(gson.toJson(users));
+                if (!users.isEmpty()) {
+                    if (auth.getAuthConfig().isDebug()) {
+                        auth.getLogger().info("Found " + users.size() + " players to purge");
+                        auth.getLogger().info(gson.toJson(users));
+                    }
+
+                    users.keySet().forEach(username -> auth.getUserManager().getUsers().remove(username));
+                    String names = users.keySet().stream()
+                            .map(name -> "'" + name + "'")
+                            .collect(Collectors.joining(", "));
+                    auth.getSql().updateAsync("DELETE FROM `auth` WHERE `name` IN (" + names + ")");
                 }
-
-                users.keySet().forEach(username -> auth.getUserManager().getUsers().remove(username));
-                String namesList = users.keySet().stream()
-                        .map(name -> "'" + name + "'")
-                        .collect(Collectors.joining(", "));
-
-                String sqlQuery = "DELETE FROM `auth` WHERE `name` IN (" + namesList + ")";
-                auth.getSql().updateAsync(sqlQuery);
             } catch (SQLException ex) {
                 auth.getLogger().log(Level.SEVERE, "Error processing ResultSet", ex);
             } finally {
