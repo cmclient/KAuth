@@ -64,7 +64,7 @@ public class SQL {
         }
     }
 
-    public Future<Void> executeAsync(String query) {
+    public CompletableFuture<Void> executeAsync(String query) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         executor.submit(() -> {
             try {
@@ -79,7 +79,7 @@ public class SQL {
         return future;
     }
 
-    public Future<Void> updateAsync(String update, Object... params) {
+    public CompletableFuture<Void> updateAsync(String update, Object... params) {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
         executor.submit(() -> {

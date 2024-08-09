@@ -58,10 +58,7 @@ public class User {
     }
 
     public void insert() {
-        String checkSql = "SELECT 1 FROM `auth` WHERE `name` = ?";
         String insertSql = "INSERT INTO `auth`(`id`, `name`, `password`, `registerDate`, `loginDate`, `registerIp`, `lastIp`) VALUES (NULL, ?, ?, ?, ?, ?, ?)";
-
-        Object[] checkParams = new Object[]{name};
         Object[] insertParams = new Object[]{
                 name,
                 password,
@@ -71,11 +68,7 @@ public class User {
                 lastIp
         };
 
-        SpigotPlugin.getInstance().getSql().recordExistsAsync(checkSql, checkParams).thenAccept(exists -> {
-            if (!exists) {
-                SpigotPlugin.getInstance().getSql().updateAsync(insertSql, insertParams);
-            }
-        }).exceptionally(ex -> {
+        SpigotPlugin.getInstance().getSql().updateAsync(insertSql, insertParams).exceptionally(ex -> {
             SpigotPlugin.getInstance().getLogger().log(Level.SEVERE, "Failed to insert user " + name, ex);
             return null;
         });
