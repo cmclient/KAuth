@@ -14,11 +14,11 @@ public class PlayerInventoryOpenListener implements Listener {
     private final SpigotPlugin auth;
 
     @EventHandler
-    public void onDrop(InventoryOpenEvent e) {
-        Player p = (Player) e.getPlayer();
-        User u = auth.getUserManager().get(p.getName());
-        if (!u.isPremium() && !u.isLogged()) {
-            e.setCancelled(true);
+    public void onDrop(InventoryOpenEvent event) {
+        Player player = (Player) event.getPlayer();
+        User user = auth.getUserManager().get(player.getName());
+        if (!user.isPremium() && !user.isLogged()) {
+            event.setCancelled(true);
         }
     }
 }

@@ -24,35 +24,35 @@ public class LoginCommand implements CommandExecutor {
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Player p = sender instanceof Player ? (Player) sender : null;
-        if (p == null) {
+        Player player = sender instanceof Player ? (Player) sender : null;
+        if (player == null) {
             return ChatHelper.send(sender, auth.getAuthConfig().getMsgCantUseInConsole());
         }
         if (args.length == 0) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgUsage().replace("{USAGE}", auth.getAuthConfig().getMsgLoginUsage()));
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgUsage().replace("{USAGE}", auth.getAuthConfig().getMsgLoginUsage()));
         }
-        User u = auth.getUserManager().get(p.getName());
-        if (u.isPremium())  {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgCantUseAsPremium());
+        User user = auth.getUserManager().get(player.getName());
+        if (user.isPremium())  {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgCantUseAsPremium());
         }
-        if (!u.isRegistered()) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgNotRegistered());
+        if (!user.isRegistered()) {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgNotRegistered());
         }
-        if (u.isLogged()) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgAlreadyLogged());
+        if (user.isLogged()) {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgAlreadyLogged());
         }
-        if (!u.getPassword().equals(Hashing.md5().hashBytes(args[0].getBytes(StandardCharsets.UTF_8)).toString())) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgWrongPassword());
+        if (!user.getPassword().equals(Hashing.md5().hashBytes(args[0].getBytes(StandardCharsets.UTF_8)).toString())) {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgWrongPassword());
         }
-        u.setLogged(true);
-        u.updateLastLogin(p);
-        ChatHelper.send(p, auth.getAuthConfig().getMsgLogged());
+        user.setLogged(true);
+        user.updateLastLogin(player);
+        ChatHelper.send(player, auth.getAuthConfig().getMsgLogged());
         if (auth.getAuthConfig().isTitleEnabled()) {
-            TitleHelper.title(p, "", auth.getAuthConfig().getTitleLogged(), 10, 30, 10);
+            TitleHelper.title(player, "", auth.getAuthConfig().getTitleLogged(), 10, 30, 10);
         }
-        p.removePotionEffect(PotionEffectType.BLINDNESS);
-        p.setLevel(0);
-        p.setExp(0.0F);
+        player.removePotionEffect(PotionEffectType.BLINDNESS);
+        player.setLevel(0);
+        player.setExp(0.0F);
         return true;
     }
 }

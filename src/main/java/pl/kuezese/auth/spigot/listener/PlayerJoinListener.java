@@ -52,6 +52,11 @@ public class PlayerJoinListener implements Listener {
         p.setLevel(0);
         p.setExp(0.0F);
 
+        u.setLastJoin(Timestamp.from(Instant.now()));
+
+        if (auth.getAuthConfig().isPremiumAuth())
+            return;
+
         if (auth.getAuthConfig().isSessionsEnabled() && u.shouldAutoLogin(p)) {
             u.setLogged(true);
             u.updateLastLogin(p);
@@ -59,10 +64,6 @@ public class PlayerJoinListener implements Listener {
             return;
         }
 
-        u.setLastJoin(Timestamp.from(Instant.now()));
-
-        if (!auth.getAuthConfig().isPremiumAuth()) {
-            new LoginTask(auth, p, u).runTaskTimer(auth, 5L, 20L);
-        }
+        new LoginTask(auth, p, u).runTaskTimer(auth, 5L, 20L);
     }
 }

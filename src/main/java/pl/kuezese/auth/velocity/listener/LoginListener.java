@@ -65,10 +65,10 @@ public class LoginListener {
             loginCache.invalidate(event.getUsername());
         }
         if (result == ResultType.PREMIUM) {
-            // In Velocity, there's no direct equivalent to setting online mode; this logic may need to be adjusted.
+            // TODO: In Velocity, there's no direct equivalent to setting online mode; this logic may need to be adjusted.
             plugin.debugLog("PreLoginEvent completed for " + event.getUsername() + " (premium)");
         } else if (result == ResultType.NON_PREMIUM) {
-            // Similarly, this might need adjustment as well.
+            // TODO: Similarly, this might need adjustment as well.
             plugin.debugLog("PreLoginEvent completed for " + event.getUsername() + " (non-premium)");
         } else if (result == ResultType.ERROR) {
             event.setResult(PreLoginEvent.PreLoginComponentResult.denied(plugin.getAuthConfig().getMsgFailedToCheck()));

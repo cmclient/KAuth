@@ -22,25 +22,25 @@ public class ChangePasswordCommand implements CommandExecutor {
     @SuppressWarnings("UnstableApiUsage")
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Player p = sender instanceof Player ? (Player) sender : null;
-        if (p == null) {
+        Player player = sender instanceof Player ? (Player) sender : null;
+        if (player == null) {
             return ChatHelper.send(sender, auth.getAuthConfig().getMsgCantUseInConsole());
         }
         if (args.length < 2) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgUsage().replace("{USAGE}", auth.getAuthConfig().getMsgChangePasswordUsage()));
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgUsage().replace("{USAGE}", auth.getAuthConfig().getMsgChangePasswordUsage()));
         }
-        User u = auth.getUserManager().get(p.getName());
-        if (u.isPremium())  {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgCantUseAsPremium());
+        User user = auth.getUserManager().get(player.getName());
+        if (user.isPremium())  {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgCantUseAsPremium());
         }
-        if (!u.isRegistered()) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgNotRegistered());
+        if (!user.isRegistered()) {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgNotRegistered());
         }
-        if (!u.getPassword().equals(Hashing.md5().hashBytes(args[0].getBytes(StandardCharsets.UTF_8)).toString())) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgWrongPassword());
+        if (!user.getPassword().equals(Hashing.md5().hashBytes(args[0].getBytes(StandardCharsets.UTF_8)).toString())) {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgWrongPassword());
         }
-        u.setPassword(Hashing.md5().hashBytes(args[1].getBytes(StandardCharsets.UTF_8)).toString(), true);
-        ChatHelper.send(p, auth.getAuthConfig().getMsgChangedPassword());
+        user.setPassword(Hashing.md5().hashBytes(args[1].getBytes(StandardCharsets.UTF_8)).toString(), true);
+        ChatHelper.send(player, auth.getAuthConfig().getMsgChangedPassword());
         return true;
     }
 }

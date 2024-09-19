@@ -10,6 +10,7 @@ import pl.kuezese.auth.shared.helper.ChatHelper;
 import pl.kuezese.auth.spigot.object.User;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -18,10 +19,12 @@ import java.util.stream.Collectors;
 public class AuthCommand implements CommandExecutor {
 
     private final SpigotPlugin auth;
+    private final List<String> subCommands;
     private final Pattern passwordPattern;
 
     public AuthCommand(SpigotPlugin auth) {
         (this.auth = auth).getCommand("auth").setExecutor(this);
+        subCommands = Arrays.asList("register", "unregister", "changepassword", "accounts");
         passwordPattern = Pattern.compile("[!-~]*");
     }
 
@@ -39,6 +42,11 @@ public class AuthCommand implements CommandExecutor {
         }
 
         String subCommand = args[0].toLowerCase(Locale.ROOT);
+        if (!subCommands.contains(subCommand)) {
+            sendUsage(sender);
+            return true;
+        }
+
         String subPermission = auth.getAuthConfig().getAdminPermission() + '.' + subCommand;
 
         if (!sender.hasPermission(subPermission)) {
@@ -52,21 +60,21 @@ public class AuthCommand implements CommandExecutor {
                     sendUsage(sender);
                     return true;
                 }
-                User u = auth.getUserManager().get(args[1]);
-                if (u == null) {
-                    u = auth.getUserManager().create(args[1]);
+                User user = auth.getUserManager().get(args[1]);
+                if (user == null) {
+                    user = auth.getUserManager().create(args[1]);
                 }
-                if (u.isPremium())  {
+                if (user.isPremium())  {
                     return ChatHelper.send(sender, auth.getAuthConfig().getMsgCantUseAsPremium());
                 }
-                if (u.isRegistered()) {
+                if (user.isRegistered()) {
                     return ChatHelper.send(sender, auth.getAuthConfig().getMsgAlreadyLogged());
                 }
                 if (!passwordPattern.matcher(args[2]).matches()) {
                     return ChatHelper.send(sender, auth.getAuthConfig().getMsgInvalidCharacters());
                 }
-                u.setPassword(Hashing.md5().hashBytes(args[2].getBytes(StandardCharsets.UTF_8)).toString());
-                u.insert();
+                user.setPassword(Hashing.md5().hashBytes(args[2].getBytes(StandardCharsets.UTF_8)).toString());
+                user.insert();
                 return ChatHelper.send(sender, auth.getAuthConfig().getMsgRegistered());
             }
             case "unregister": {
@@ -74,20 +82,20 @@ public class AuthCommand implements CommandExecutor {
                     sendUsage(sender);
                     return true;
                 }
-                User u = auth.getUserManager().get(args[1]);
-                if (u == null || !u.isRegistered()) {
+                User user = auth.getUserManager().get(args[1]);
+                if (user == null || !user.isRegistered()) {
                     return ChatHelper.send(sender, auth.getAuthConfig().getMsgNotRegistered());
                 }
-                if (u.isPremium())  {
+                if (user.isPremium())  {
                     return ChatHelper.send(sender, auth.getAuthConfig().getMsgCantUseAsPremium());
                 }
-                u.setLogged(false);
-                u.setPassword(null);
-                Player p = auth.getServer().getPlayer(u.getName());
+                user.setLogged(false);
+                user.setPassword(null);
+                Player p = auth.getServer().getPlayer(user.getName());
                 if (p != null) {
                     p.kickPlayer(ChatHelper.color(auth.getAuthConfig().getMsgUnregistered()));
                 }
-                auth.getUserManager().remove(u);
+                auth.getUserManager().remove(user);
                 return ChatHelper.send(sender, auth.getAuthConfig().getMsgUnregistered());
             }
             case "changepassword": {
@@ -95,15 +103,15 @@ public class AuthCommand implements CommandExecutor {
                     sendUsage(sender);
                     return true;
                 }
-                User u = auth.getUserManager().get(args[1]);
-                if (u == null || !u.isRegistered()) {
+                User user = auth.getUserManager().get(args[1]);
+                if (user == null || !user.isRegistered()) {
                     return ChatHelper.send(sender, auth.getAuthConfig().getMsgNotRegistered());
                 }
-                if (u.isPremium())  {
+                if (user.isPremium())  {
                     return ChatHelper.send(sender, auth.getAuthConfig().getMsgCantUseAsPremium());
                 }
-                u.setPassword(Hashing.md5().hashBytes(args[2].getBytes(StandardCharsets.UTF_8)).toString(), true);
-                u.setLogged(false);
+                user.setPassword(Hashing.md5().hashBytes(args[2].getBytes(StandardCharsets.UTF_8)).toString(), true);
+                user.setLogged(false);
                 return ChatHelper.send(sender, auth.getAuthConfig().getMsgChangedPassword());
             }
             case "accounts": {
@@ -112,22 +120,26 @@ public class AuthCommand implements CommandExecutor {
                     return true;
                 }
 
-                String name = args[1];
-                User u;
+                String arg = args[1];
+                User user;
 
-                if (name.contains(".")) {
-                    u = auth.getUserManager().getUsers().values().stream().filter(user -> user.getLastIp() != null && user.getLastIp().equals(name)).findAny().orElse(null);
+                if (arg.contains(".")) {
+                    user = auth.getUserManager().getUsers().values()
+                            .stream()
+                            .filter(other -> other.getLastIp() != null && other.getLastIp().equals(arg))
+                            .findAny()
+                            .orElse(null);
                 } else {
-                    u = auth.getUserManager().get(name);
+                    user = auth.getUserManager().get(arg);
                 }
 
-                if (u == null || u.getLastIp() == null) {
+                if (user == null || user.getLastIp() == null) {
                     return ChatHelper.send(sender, auth.getAuthConfig().getMsgNotRegistered());
                 }
 
                 List<User> users = auth.getUserManager().getUsers().values().stream()
                         .filter(other -> other.getLastIp() != null)
-                        .filter(other -> other.getLastIp().equals(u.getLastIp()))
+                        .filter(other -> other.getLastIp().equals(user.getLastIp()))
                         .collect(Collectors.toList());
 
                 String accounts = users.stream()

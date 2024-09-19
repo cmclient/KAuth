@@ -15,10 +15,12 @@ public class PlayerQuitListener implements Listener {
     private final SpigotPlugin auth;
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onQuit(PlayerQuitEvent e) {
-        Player p = e.getPlayer();
-        User u = auth.getUserManager().get(p.getName());
-        u.setLogged(false);
-        u.setPremium(false);
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        User user = auth.getUserManager().get(player.getName());
+        if (user != null) {
+            user.setLogged(false);
+            user.setPremium(false);
+        }
     }
 }

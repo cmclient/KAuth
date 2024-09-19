@@ -17,13 +17,13 @@ public class PlayerCommandListener implements Listener {
     private final String[] allowed = new String[]{"/login", "/log", "/l", "/register", "/reg", "/r", "/changepassword", "/changepass"};
 
     @EventHandler(ignoreCancelled = true)
-    public void onCommand(PlayerCommandPreprocessEvent e) {
-        Player p = e.getPlayer();
-        User u = auth.getUserManager().get(p.getName());
-        if (!u.isPremium() && !u.isLogged()) {
-            String command = e.getMessage().split(" ")[0];
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        User user = auth.getUserManager().get(player.getName());
+        if (!user.isPremium() && !user.isLogged()) {
+            String command = event.getMessage().split(" ")[0];
             if (!match(allowed, command)) {
-                e.setCancelled(true);
+                event.setCancelled(true);
             }
         }
     }

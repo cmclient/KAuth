@@ -14,12 +14,12 @@ public class PlayerMoveListener implements Listener {
     private final SpigotPlugin auth;
 
     @EventHandler(ignoreCancelled = true)
-    public void onMove(PlayerMoveEvent e) {
-        if (e.getFrom().getBlockX() != e.getTo().getBlockX() || e.getFrom().getBlockZ() != e.getTo().getBlockZ()) {
-            Player p = e.getPlayer();
-            User u = auth.getUserManager().get(p.getName());
-            if (!u.isPremium() && !u.isLogged()) {
-                e.setTo(e.getFrom());
+    public void onMove(PlayerMoveEvent event) {
+        if (event.getFrom().getBlockX() != event.getTo().getBlockX() || event.getFrom().getBlockZ() != event.getTo().getBlockZ()) {
+            Player player = event.getPlayer();
+            User user = auth.getUserManager().get(player.getName());
+            if (!user.isPremium() && !user.isLogged()) {
+                event.setTo(event.getFrom());
             }
         }
     }

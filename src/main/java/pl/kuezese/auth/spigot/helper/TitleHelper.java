@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 public class TitleHelper {
 
-    public static void title(Player p, String up, String down, int i, int j, int k) {
-        TitleAPI.sendTitle(p, i, j, k, up, down);
+    public static void title(Player player, String up, String down, int fadeIn, int stay, int fadeOut) {
+        TitleAPI.sendTitle(player, fadeIn, stay, fadeOut, up, down);
     }
 }

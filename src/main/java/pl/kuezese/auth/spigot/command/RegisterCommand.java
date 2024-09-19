@@ -28,41 +28,41 @@ public class RegisterCommand implements CommandExecutor {
 
     @SuppressWarnings("UnstableApiUsage")
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Player p = sender instanceof Player ? (Player) sender : null;
-        if (p == null) {
+        Player player = sender instanceof Player ? (Player) sender : null;
+        if (player == null) {
             return ChatHelper.send(sender, auth.getAuthConfig().getMsgCantUseInConsole());
         }
         if (args.length < 2) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgUsage().replace("{USAGE}", auth.getAuthConfig().getMsgRegisterUsage()));
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgUsage().replace("{USAGE}", auth.getAuthConfig().getMsgRegisterUsage()));
         }
-        User u = auth.getUserManager().get(p.getName());
-        if (u.isPremium())  {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgCantUseAsPremium());
+        User user = auth.getUserManager().get(player.getName());
+        if (user.isPremium())  {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgCantUseAsPremium());
         }
-        if (u.isRegistered()) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgAlreadyRegistered());
+        if (user.isRegistered()) {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgAlreadyRegistered());
         }
         if (!passwordPattern.matcher(args[0]).matches()) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgInvalidCharacters());
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgInvalidCharacters());
         }
         if (!args[0].equals(args[1])) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgNotSamePassword());
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgNotSamePassword());
         }
-        if (auth.getAuthConfig().getMaxAccounts() != 0 && auth.getUserManager().getByIp(p.getAddress().getAddress().getHostAddress()) >= auth.getAuthConfig().getMaxAccounts()) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgMaxAccounts());
+        if (auth.getAuthConfig().getMaxAccounts() != 0 && auth.getUserManager().getByIp(player.getAddress().getAddress().getHostAddress()) >= auth.getAuthConfig().getMaxAccounts()) {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgMaxAccounts());
         }
-        u.setRegisterDate(Timestamp.from(Instant.now()));
-        u.setPassword(Hashing.md5().hashBytes(args[1].getBytes(StandardCharsets.UTF_8)).toString());
-        u.setLogged(true);
-        u.updateLastLogin(p);
-        u.insert();
-        ChatHelper.send(p, auth.getAuthConfig().getMsgRegistered());
+        user.setRegisterDate(Timestamp.from(Instant.now()));
+        user.setPassword(Hashing.md5().hashBytes(args[1].getBytes(StandardCharsets.UTF_8)).toString());
+        user.setLogged(true);
+        user.updateLastLogin(player);
+        user.insert();
+        ChatHelper.send(player, auth.getAuthConfig().getMsgRegistered());
         if (auth.getAuthConfig().isTitleEnabled()) {
-            TitleHelper.title(p, "", auth.getAuthConfig().getTitleRegistered(), 10, 30, 10);
+            TitleHelper.title(player, "", auth.getAuthConfig().getTitleRegistered(), 10, 30, 10);
         }
-        p.removePotionEffect(PotionEffectType.BLINDNESS);
-        p.setLevel(0);
-        p.setExp(0.0f);
+        player.removePotionEffect(PotionEffectType.BLINDNESS);
+        player.setLevel(0);
+        player.setExp(0.0f);
         return true;
     }
 }

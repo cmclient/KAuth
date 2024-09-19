@@ -33,7 +33,7 @@ public class PremiumManager {
             int responseCode = connection.getResponseCode();
             return responseCode == 200 ? ResultType.PREMIUM : ResultType.NON_PREMIUM;
         } catch (Exception ex) {
-            logger.error("Failed to verify player " + name, ex);
+            logger.error("Failed to verify player {}", name, ex);
             return ResultType.ERROR;
         }
     }
@@ -54,7 +54,7 @@ public class PremiumManager {
                     ResultData data = new ResultData(rs);
                     cache.put(data.getName(), data);
                 }
-                logger.info("Loaded " + cache.size() + " cached data.");
+                logger.info("Loaded {} cached data.", cache.size());
             } catch (Exception ex) {
                 logger.info("Failed to load cached data", ex);
             }

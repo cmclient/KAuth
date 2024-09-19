@@ -25,13 +25,13 @@ public class UserManager {
 
     public User get(ResultSet rs) throws SQLException {
         String name = rs.getString("name");
-        User u = users.get(name);
-        if (u == null) {
-            u =  new User(rs);
-            users.put(u.getName(), u);
+        User user = users.get(name);
+        if (user == null) {
+            user =  new User(rs);
+            users.put(user.getName(), user);
         }
 
-        return u;
+        return user;
     }
 
     public User getIgnoreCase(String name) {
@@ -52,15 +52,15 @@ public class UserManager {
     }
 
     public User create(Player player) {
-        User u = new User(player);
-        users.put(u.getName(), u);
-        return u;
+        User user = new User(player);
+        users.put(user.getName(), user);
+        return user;
     }
 
     public User create(String name) {
-        User u = new User(name);
-        users.put(name, u);
-        return u;
+        User user = new User(name);
+        users.put(name, user);
+        return user;
     }
 
     @SneakyThrows

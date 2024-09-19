@@ -34,6 +34,13 @@ public class AuthMessageListener implements PluginMessageListener {
                 return;
             }
             if (!onlineMode) {
+                if (auth.getAuthConfig().isSessionsEnabled() && user.shouldAutoLogin(player)) {
+                    user.setLogged(true);
+                    user.updateLastLogin(player);
+                    ChatHelper.send(player, auth.getAuthConfig().getMsgSession());
+                    return;
+                }
+
                 new LoginTask(auth, player, user).runTaskTimer(auth, 0L, 20L);
                 return;
             }

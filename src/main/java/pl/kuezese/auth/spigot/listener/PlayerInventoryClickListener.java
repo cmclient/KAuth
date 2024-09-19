@@ -14,11 +14,11 @@ public class PlayerInventoryClickListener implements Listener {
     private final SpigotPlugin auth;
 
     @EventHandler(ignoreCancelled = true)
-    public void onDrop(InventoryClickEvent e) {
-        Player p = (Player) e.getWhoClicked();
-        User u = auth.getUserManager().get(p.getName());
+    public void onDrop(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        User u = auth.getUserManager().get(player.getName());
         if (!u.isPremium() && !u.isLogged()) {
-            e.setCancelled(true);
+            event.setCancelled(true);
         }
     }
 }

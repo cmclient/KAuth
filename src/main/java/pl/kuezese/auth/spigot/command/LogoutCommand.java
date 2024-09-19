@@ -18,23 +18,23 @@ public class LogoutCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        Player p = sender instanceof Player ? (Player) sender : null;
-        if (p == null) {
+        Player player = sender instanceof Player ? (Player) sender : null;
+        if (player == null) {
             return ChatHelper.send(sender, auth.getAuthConfig().getMsgCantUseInConsole());
         }
-        User u = auth.getUserManager().get(p.getName());
-        if (u.isPremium())  {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgCantUseAsPremium());
+        User user = auth.getUserManager().get(player.getName());
+        if (user.isPremium())  {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgCantUseAsPremium());
         }
-        if (!u.isRegistered()) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgNotRegistered());
+        if (!user.isRegistered()) {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgNotRegistered());
         }
-        if (!u.isLogged()) {
-            return ChatHelper.send(p, auth.getAuthConfig().getMsgNotLogged());
+        if (!user.isLogged()) {
+            return ChatHelper.send(player, auth.getAuthConfig().getMsgNotLogged());
         }
-        u.setLogged(false);
-        u.removeLastLogin();
-        p.kickPlayer(ChatHelper.color(auth.getAuthConfig().getMsgLogout()));
+        user.setLogged(false);
+        user.removeLastLogin();
+        player.kickPlayer(ChatHelper.color(auth.getAuthConfig().getMsgLogout()));
         return true;
     }
 }

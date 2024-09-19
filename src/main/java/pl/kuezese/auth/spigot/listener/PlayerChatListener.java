@@ -14,11 +14,11 @@ public class PlayerChatListener implements Listener {
     private final SpigotPlugin auth;
 
     @EventHandler(ignoreCancelled = true)
-    public void onChat(AsyncPlayerChatEvent e) {
-        Player p = e.getPlayer();
-        User u = auth.getUserManager().get(p.getName());
-        if (!u.isPremium() && !u.isLogged()) {
-            e.setCancelled(true);
+    public void onChat(AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
+        User user = auth.getUserManager().get(player.getName());
+        if (!user.isPremium() && !user.isLogged()) {
+            event.setCancelled(true);
         }
     }
 }
