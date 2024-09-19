@@ -11,12 +11,12 @@ public final class ChatHelper {
         return ChatColor.translateAlternateColorCodes('&', msg).replace(">>", "»").replace("<<", "«");
     }
 
-    public static BaseComponent[] colorComponent(String s) {
-        return TextComponent.fromLegacyText(color(s));
+    public static BaseComponent[] colorComponent(String msg) {
+        return TextComponent.fromLegacyText(color(msg));
     }
     
-    public static boolean send(CommandSender p, String msg) {
-        p.sendMessage(color(msg));
+    public static boolean send(CommandSender sender, String msg) {
+        sender.sendMessage(color(msg));
         return true;
     }
 }
