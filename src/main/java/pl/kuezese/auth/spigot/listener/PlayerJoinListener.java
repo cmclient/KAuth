@@ -24,46 +24,46 @@ public class PlayerJoinListener implements Listener {
     private final SpigotPlugin auth;
 
     @EventHandler
-    public void onLogin(PlayerLoginEvent e) {
-        Player p = e.getPlayer();
-        if (!pattern.matcher(p.getName()).find()) {
-            e.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatHelper.color(auth.getAuthConfig().getMsgInvalidCharacters()));
+    public void onLogin(PlayerLoginEvent event) {
+        Player player = event.getPlayer();
+        if (!pattern.matcher(player.getName()).find()) {
+            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatHelper.color(auth.getAuthConfig().getMsgInvalidCharacters()));
             return;
         }
-        User u = auth.getUserManager().getIgnoreCase(p.getName());
-        if (u != null && !u.getName().equals(p.getName())) {
-            e.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatHelper.color(auth.getAuthConfig().getMsgCorrectUsername().replace("{NAME}", u.getName())));
+        User user = auth.getUserManager().getIgnoreCase(player.getName());
+        if (user != null && !user.getName().equals(player.getName())) {
+            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatHelper.color(auth.getAuthConfig().getMsgCorrectUsername().replace("{NAME}", user.getName())));
             return;
         }
-        if (auth.getAuthConfig().getMaxAccounts() != 0 && (u == null || !u.isRegistered()) && auth.getUserManager().getByIp(e.getAddress().getHostAddress()) >= auth.getAuthConfig().getMaxAccounts()) {
-            e.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatHelper.color(auth.getAuthConfig().getMsgMaxAccounts()));
+        if (auth.getAuthConfig().getMaxAccounts() != 0 && (user == null || !user.isRegistered()) && auth.getUserManager().getByIp(event.getAddress().getHostAddress()) >= auth.getAuthConfig().getMaxAccounts()) {
+            event.disallow(PlayerLoginEvent.Result.KICK_WHITELIST, ChatHelper.color(auth.getAuthConfig().getMsgMaxAccounts()));
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onJoin(PlayerJoinEvent e) {
-        Player p = e.getPlayer();
-        User u = auth.getUserManager().get(p.getName());
-        if (u == null) {
-            u = auth.getUserManager().create(p);
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        User user = auth.getUserManager().get(player.getName());
+        if (user == null) {
+            user = auth.getUserManager().create(player);
         }
 
-        p.removePotionEffect(PotionEffectType.BLINDNESS);
-        p.setLevel(0);
-        p.setExp(0.0F);
+        player.removePotionEffect(PotionEffectType.BLINDNESS);
+        player.setLevel(0);
+        player.setExp(0.0F);
 
-        u.setLastJoin(Timestamp.from(Instant.now()));
+        user.setLastJoin(Timestamp.from(Instant.now()));
 
         if (auth.getAuthConfig().isPremiumAuth())
             return;
 
-        if (auth.getAuthConfig().isSessionsEnabled() && u.shouldAutoLogin(p)) {
-            u.setLogged(true);
-            u.updateLastLogin(p);
-            ChatHelper.send(p, auth.getAuthConfig().getMsgSession());
+        if (auth.getAuthConfig().isSessionsEnabled() && user.shouldAutoLogin(player)) {
+            user.setLogged(true);
+            user.updateLastLogin(player);
+            ChatHelper.send(player, auth.getAuthConfig().getMsgSession());
             return;
         }
 
-        new LoginTask(auth, p, u).runTaskTimer(auth, 5L, 20L);
+        new LoginTask(auth, player, user).runTaskTimer(auth, 5L, 20L);
     }
 }

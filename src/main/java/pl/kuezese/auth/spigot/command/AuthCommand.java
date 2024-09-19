@@ -91,9 +91,9 @@ public class AuthCommand implements CommandExecutor {
                 }
                 user.setLogged(false);
                 user.setPassword(null);
-                Player p = auth.getServer().getPlayer(user.getName());
-                if (p != null) {
-                    p.kickPlayer(ChatHelper.color(auth.getAuthConfig().getMsgUnregistered()));
+                Player player = auth.getServer().getPlayer(user.getName());
+                if (player != null) {
+                    player.kickPlayer(ChatHelper.color(auth.getAuthConfig().getMsgUnregistered()));
                 }
                 auth.getUserManager().remove(user);
                 return ChatHelper.send(sender, auth.getAuthConfig().getMsgUnregistered());

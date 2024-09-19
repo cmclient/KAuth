@@ -73,8 +73,8 @@ public class UserManager {
         auth.getSql().queryAsync("SELECT name, password, registerDate, loginDate, registerIp, lastIp FROM `auth`").thenAccept(rs -> {
             try {
                 while (rs.next()) {
-                    User u = new User(rs);
-                    users.put(u.getName(), u);
+                    User user = new User(rs);
+                    users.put(user.getName(), user);
                 }
                 auth.getLogger().info("Loaded " + users.size() + " players.");
             } catch (Exception ex) {

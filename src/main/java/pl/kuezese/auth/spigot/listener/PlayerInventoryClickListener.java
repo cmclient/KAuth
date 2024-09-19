@@ -16,8 +16,8 @@ public class PlayerInventoryClickListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onDrop(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        User u = auth.getUserManager().get(player.getName());
-        if (!u.isPremium() && !u.isLogged()) {
+        User user = auth.getUserManager().get(player.getName());
+        if (!user.isPremium() && !user.isLogged()) {
             event.setCancelled(true);
         }
     }
