@@ -1,4 +1,4 @@
-package pl.kuezese.auth.bungee.type;
+package pl.kuezese.auth.shared.type;
 
 import lombok.Getter;
 

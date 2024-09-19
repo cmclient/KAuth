@@ -16,12 +16,23 @@
 
     <repositories>
         <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.velocitypowered/velocity-api -->
+        <dependency>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-api</artifactId>
+            <version>3.3.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-shade-plugin -->
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>

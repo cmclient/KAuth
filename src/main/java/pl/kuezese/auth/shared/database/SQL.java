@@ -3,18 +3,18 @@ package pl.kuezese.auth.shared.database;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.kuezese.auth.shared.type.DatabaseType;
 
 import java.io.File;
 import java.sql.*;
 import java.util.concurrent.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @RequiredArgsConstructor
 public class SQL {
 
-    private final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Connection conn;
     private final Credentials credentials;
     public final ExecutorService executor = Executors.newCachedThreadPool();
@@ -56,10 +56,10 @@ public class SQL {
             }
             return true;
         } catch (ClassNotFoundException ex) {
-            logger.log(Level.SEVERE, "Failed to find driver for " + credentials.getType() + " database!");
+            logger.error("Failed to find driver for " + credentials.getType() + " database!");
             return false;
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Failed to connect to database!", ex);
+            logger.error("Failed to connect to database!", ex);
             return false;
         }
     }
@@ -71,7 +71,7 @@ public class SQL {
                 conn.createStatement().execute(query);
                 future.complete(null);
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, "SQL Execute Error", ex);
+                logger.error("SQL Execute Error", ex);
                 future.completeExceptionally(ex);
             }
         });
@@ -91,7 +91,7 @@ public class SQL {
                 stmt.executeUpdate();
                 future.complete(null);
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, "SQL Update Error", ex);
+                logger.error("SQL Update Error", ex);
                 future.completeExceptionally(ex);
             }
         });
@@ -108,7 +108,7 @@ public class SQL {
             future.complete(rs.next());
         } catch (Exception ex) {
             future.completeExceptionally(ex);
-            logger.log(Level.SEVERE, "SQL Query Error", ex);
+            logger.error("SQL Query Error", ex);
         }
 
         return future;
@@ -126,7 +126,7 @@ public class SQL {
                 ResultSet resultSet = stmt.executeQuery();
                 future.complete(resultSet);
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, "SQL Query Error", ex);
+                logger.error("SQL Query Error", ex);
                 future.completeExceptionally(ex);
             }
         });
@@ -141,7 +141,7 @@ public class SQL {
         try {
             conn.close();
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "SQL Disconnect Error", ex);
+            logger.error("SQL Disconnect Error", ex);
         }
     }
 
@@ -152,7 +152,7 @@ public class SQL {
         try {
             return !conn.isClosed();
         } catch (Exception ex) {
-            logger.log(Level.WARNING, "SQL Closed Error", ex);
+            logger.error("SQL Closed Error", ex);
             return false;
         }
     }

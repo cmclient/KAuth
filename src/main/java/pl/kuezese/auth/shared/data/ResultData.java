@@ -1,8 +1,8 @@
-package pl.kuezese.auth.bungee.data;
+package pl.kuezese.auth.shared.data;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import pl.kuezese.auth.bungee.type.ResultType;
+import pl.kuezese.auth.shared.type.ResultType;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

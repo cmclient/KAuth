@@ -54,5 +54,6 @@ messages:
   no-perm: ' &8>> &cYou do not have &7permission &cto use this &7command&c.'
   max-accounts: ' &8>> &cYou have reached the maximum number of accounts for your IP.'
   time-left: '&8>> &cYour time to log in has expired.'
+  accounts: '&8>> &cAccounts: &7{ACCOUNTS}&c.'
 listeners:
   move: true

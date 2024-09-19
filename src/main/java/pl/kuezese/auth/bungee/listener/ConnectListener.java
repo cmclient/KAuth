@@ -20,11 +20,11 @@ public class ConnectListener implements Listener {
     @EventHandler
     public void onConnect(ServerConnectedEvent event) {
         ProxiedPlayer player = event.getPlayer();
-        if (auth.getAuthConfig().isDebug()) {
-            auth.getLogger().info("ServerConnectedEvent " + player.getName() + " " + (player.getPendingConnection().isOnlineMode() ? "online mode" : "offline mode"));
-        }
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         DataOutputStream out = new DataOutputStream(stream);
+
+        auth.debugLog("ServerConnectedEvent " + player.getName() + " " + (player.getPendingConnection().isOnlineMode() ? "online mode" : "offline mode"));
+
         try {
             out.writeBoolean(player.getPendingConnection().isOnlineMode());
             out.writeUTF(player.getName());
@@ -32,9 +32,7 @@ public class ConnectListener implements Listener {
         } catch (Exception ex) {
             auth.getLogger().log(Level.SEVERE, "Failed to create auth data", ex);
         }
-        if (auth.getAuthConfig().isDebug()) {
-            auth.getLogger().info("Sending auth data " + Arrays.toString(new String[]{String.valueOf(player.getPendingConnection().isOnlineMode()), player.getName(), player.getUniqueId().toString()}));
-        }
         event.getServer().sendData("kauth:premiumlogin", stream.toByteArray());
+        auth.debugLog("Sent auth data " + Arrays.toString(new String[]{String.valueOf(player.getPendingConnection().isOnlineMode()), player.getName(), player.getUniqueId().toString()}));
     }
 }

@@ -58,6 +58,7 @@ public class Config {
     private String msgInvalidCharacters;
     private String msgInvalidUsername;
     private String msgTimeLeft;
+    private String msgAccounts;
 
     /** Auth Configuration **/
     private boolean premiumAuth;
@@ -128,8 +129,9 @@ public class Config {
         msgCorrectUsername = cfg.getString("messages.correct-username");
         msgInvalidCharacters = cfg.getString("messages.invalid-characters");
         msgInvalidUsername = cfg.getString("messages.invalid-username");
-        msgTimeLeft = cfg.getString("messages.time-left");
         msgMaxAccounts = cfg.getString("messages.max-accounts");
+        msgTimeLeft = cfg.getString("messages.time-left");
+        msgAccounts = cfg.getString("messages.accounts");
 
         premiumAuth = cfg.getBoolean("auth.premium");
         maxAccounts = cfg.getInt("auth.max-accounts");

@@ -45,8 +45,10 @@ public class AuthMessageListener implements PluginMessageListener {
                 player.kickPlayer(ChatHelper.color("&cFailed to verify session."));
                 return;
             }
-            user.setPremium(true);
-            user.removeLastLogin();
+            user.insert().thenAcceptAsync(unused -> {
+                user.setPremium(true);
+                user.updateLastLogin(player);
+            });
             player.sendMessage(ChatHelper.color(auth.getAuthConfig().getMsgLoggedPremium()));
         } catch (Exception ex) {
             player.kickPlayer(ChatHelper.color("&cFailed to verify session."));

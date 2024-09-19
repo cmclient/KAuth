@@ -8,8 +8,8 @@ import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import pl.kuezese.auth.bungee.BungeePlugin;
-import pl.kuezese.auth.bungee.data.ResultData;
-import pl.kuezese.auth.bungee.type.ResultType;
+import pl.kuezese.auth.shared.data.ResultData;
+import pl.kuezese.auth.shared.type.ResultType;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -34,13 +34,15 @@ public class LoginListener implements Listener {
 
         ResultData data = auth.getPremiumManager().getCache().get(username);
         if (data != null) {
-            handleConnection(connection, data, true);
+            handleConnection(event, connection, data, true);
             return;
         }
 
         Boolean cached = loginCache.getIfPresent(username);
         if (cached != null) {
-            connection.disconnect(auth.getAuthConfig().getMsgAlreadyChecking());
+            event.setCancelled(true);
+            event.setCancelReason(auth.getAuthConfig().getMsgAlreadyChecking());
+            auth.getLogger().info("PreLoginEvent completed for " + username + " (already checking)");
             return;
         }
 
@@ -49,26 +51,29 @@ public class LoginListener implements Listener {
         data = new ResultData(username, result,
                 result == ResultType.PREMIUM ? getTimestamp(7, TimeUnit.DAYS) :
                 result == ResultType.NON_PREMIUM ? getTimestamp(30, TimeUnit.MINUTES) :
-                result == ResultType.ERROR ? getTimestamp(10, TimeUnit.SECONDS) : null);
+                getTimestamp(10, TimeUnit.SECONDS));
 
-        handleConnection(connection, data, false);
+        handleConnection(event, connection, data, false);
+        auth.debugLog("PreLoginEvent completed for " + username);
     }
 
-    private void handleConnection(PendingConnection connection, ResultData data, boolean cache) {
+    private void handleConnection(PreLoginEvent event, PendingConnection connection, ResultData data, boolean cache) {
         ResultType result = data.getResult();
-        if (auth.getAuthConfig().isDebug()) {
-            auth.getLogger().info("Got result " + result.getName() + " for player " + connection.getName() + (cache ? " (cached)" : ""));
-        }
+        auth.debugLog("Got result " + result.getName() + " for player " + connection.getName() + (cache ? " (cached)" : ""));
         if (!cache) {
             auth.getPremiumManager().cache(data);
             loginCache.invalidate(connection.getName());
         }
         if (result == ResultType.PREMIUM) {
             connection.setOnlineMode(true);
+            auth.debugLog("PreLoginEvent completed for " + connection.getName() + " (premium)");
         } else if (result == ResultType.NON_PREMIUM) {
             connection.setOnlineMode(false);
+            auth.debugLog("PreLoginEvent completed for " + connection.getName() + " (non-premium)");
         } else if (result == ResultType.ERROR) {
-            connection.disconnect(auth.getAuthConfig().getMsgFailedToCheck());
+            event.setCancelled(true);
+            event.setCancelReason(auth.getAuthConfig().getMsgFailedToCheck());
+            auth.debugLog("PreLoginEvent completed for " + connection.getName() + " (error)");
         }
     }
 

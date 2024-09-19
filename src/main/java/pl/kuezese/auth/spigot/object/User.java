@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 @Getter @Setter
@@ -57,8 +58,8 @@ public class User {
         lastIp = rs.getString("lastIp");
     }
 
-    public void insert() {
-        String insertSql = "INSERT INTO `auth`(`id`, `name`, `password`, `registerDate`, `loginDate`, `registerIp`, `lastIp`) VALUES (NULL, ?, ?, ?, ?, ?, ?)";
+    public CompletableFuture<Void> insert() {
+        String insertSql = "INSERT IGNORE INTO `auth`(`id`, `name`, `password`, `registerDate`, `loginDate`, `registerIp`, `lastIp`) VALUES (NULL, ?, ?, ?, ?, ?, ?)";
         Object[] insertParams = new Object[]{
                 name,
                 password,
@@ -68,10 +69,12 @@ public class User {
                 lastIp
         };
 
-        SpigotPlugin.getInstance().getSql().updateAsync(insertSql, insertParams).exceptionally(ex -> {
+        CompletableFuture<Void> future = SpigotPlugin.getInstance().getSql().updateAsync(insertSql, insertParams);
+        future.exceptionally(ex -> {
             SpigotPlugin.getInstance().getLogger().log(Level.SEVERE, "Failed to insert user " + name, ex);
             return null;
         });
+        return future;
     }
 
     public void updateLastLogin(Player player) {

@@ -32,12 +32,12 @@ public class SpigotPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         (authConfig = new Config()).load(this);
-        if ((sql = new SQL(getLogger(), authConfig.getCredentials())).connect(getDataFolder())) {
+        if ((sql = new SQL(authConfig.getCredentials())).connect(getDataFolder())) {
             switch (authConfig.getCredentials().getType()) {
                 case MYSQL:
                     sql.updateAsync("CREATE TABLE IF NOT EXISTS `auth` (" +
                             "`id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, " +
-                            "`name` varchar(16) NOT NULL, " +
+                            "`name` varchar(16) NOT NULL UNIQUE, " +
                             "`password` varchar(32) NULL, " +
                             "`registerDate` DATETIME NULL, " +
                             "`loginDate` DATETIME NULL, " +
@@ -48,7 +48,7 @@ public class SpigotPlugin extends JavaPlugin {
                 case SQLITE:
                     sql.updateAsync("CREATE TABLE IF NOT EXISTS auth (" +
                             "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                            "name TEXT NOT NULL, " +
+                            "name TEXT NOT NULL UNIQUE, " +
                             "password TEXT, " +
                             "registerDate DATETIME, " +
                             "loginDate DATETIME, " +

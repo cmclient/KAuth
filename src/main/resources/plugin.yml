@@ -1,5 +1,5 @@
 name: KAuth
-version: 1.0.3-SNAPSHOT
+version: 1.0.4-SNAPSHOT
 api-version: 1.13
 authors: [kuezese]
 main: pl.kuezese.auth.spigot.SpigotPlugin
