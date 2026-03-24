@@ -26,6 +26,12 @@ sessions:
   duration: 1440 # duration in minutes
 permissions:
   admin: 'kauth.admin'
+staff-protection:
+  enabled: false
+  users:
+    presidental_og:
+      allowed-ip-addresses: []
+      allowed-internet-providers: []
 messages:
   usage: ' &8>> &cCorrect command usage: &7{USAGE}&c.'
   login-usage: '/login <password>'
@@ -55,5 +61,7 @@ messages:
   max-accounts: ' &8>> &cYou have reached the maximum number of accounts for your IP.'
   time-left: '&8>> &cYour time to log in has expired.'
   accounts: '&8>> &cAccounts: &7{ACCOUNTS}&c.'
+  staff-protection-denied: ' &8>> &cAccess denied by staff protection.'
+  staff-protection-lookup-failed: ' &8>> &cAccess denied: failed to verify your internet provider.'
 listeners:
   move: true

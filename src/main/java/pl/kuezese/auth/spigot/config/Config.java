@@ -1,6 +1,7 @@
 package pl.kuezese.auth.spigot.config;
 
 import lombok.Getter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import pl.kuezese.auth.shared.database.SQL;
 import pl.kuezese.auth.shared.type.DatabaseType;
@@ -8,6 +9,9 @@ import pl.kuezese.auth.spigot.SpigotPlugin;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Getter
 public class Config {
@@ -59,6 +63,8 @@ public class Config {
     private String msgInvalidUsername;
     private String msgTimeLeft;
     private String msgAccounts;
+    private String msgStaffProtectionDenied;
+    private String msgStaffProtectionLookupFailed;
 
     /** Auth Configuration **/
     private boolean premiumAuth;
@@ -76,6 +82,21 @@ public class Config {
 
     /** Listeners Configuration **/
     private boolean moveListener;
+
+    /** Staff Protection Configuration **/
+    private boolean staffProtectionEnabled;
+    private Map<String, StaffProtectionUser> staffProtectionUsers = new HashMap<>();
+
+    @Getter
+    public static class StaffProtectionUser {
+        private final List<String> allowedIpAddresses;
+        private final List<String> allowedInternetProviders;
+
+        public StaffProtectionUser(List<String> allowedIpAddresses, List<String> allowedInternetProviders) {
+            this.allowedIpAddresses = allowedIpAddresses;
+            this.allowedInternetProviders = allowedInternetProviders;
+        }
+    }
 
     public void load(SpigotPlugin auth) {
         if (!auth.getDataFolder().exists() && auth.getDataFolder().mkdirs()) {
@@ -132,6 +153,8 @@ public class Config {
         msgMaxAccounts = cfg.getString("messages.max-accounts");
         msgTimeLeft = cfg.getString("messages.time-left");
         msgAccounts = cfg.getString("messages.accounts");
+        msgStaffProtectionDenied = cfg.getString("messages.staff-protection-denied");
+        msgStaffProtectionLookupFailed = cfg.getString("messages.staff-protection-lookup-failed");
 
         premiumAuth = cfg.getBoolean("auth.premium");
         maxAccounts = cfg.getInt("auth.max-accounts");
@@ -140,6 +163,22 @@ public class Config {
         sessionsDuration = Duration.ofMinutes(cfg.getInt("sessions.duration"));
 
         adminPermission = cfg.getString("permissions.admin");
+
+        staffProtectionEnabled = cfg.getBoolean("staff-protection.enabled");
+        staffProtectionUsers = new HashMap<>();
+        ConfigurationSection usersSection = cfg.getConfigurationSection("staff-protection.users");
+        if (usersSection != null) {
+            for (String username : usersSection.getKeys(false)) {
+                String basePath = "staff-protection.users." + username;
+                staffProtectionUsers.put(
+                        username.toLowerCase(),
+                        new StaffProtectionUser(
+                                cfg.getStringList(basePath + ".allowed-ip-addresses"),
+                                cfg.getStringList(basePath + ".allowed-internet-providers")
+                        )
+                );
+            }
+        }
 
         moveListener = cfg.getBoolean("listeners.move");
     }

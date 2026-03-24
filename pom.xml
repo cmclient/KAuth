@@ -6,7 +6,7 @@
 
     <groupId>pl.kuezese</groupId>
     <artifactId>auth</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.5-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -26,13 +26,6 @@
     </repositories>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.velocitypowered/velocity-api -->
-        <dependency>
-            <groupId>com.velocitypowered</groupId>
-            <artifactId>velocity-api</artifactId>
-            <version>3.3.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-shade-plugin -->
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
@@ -42,7 +35,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.34</version>
+            <version>1.18.36</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -50,14 +43,14 @@
             <artifactId>server</artifactId>
             <version>v1_8_R3</version>
             <scope>system</scope>
-            <systemPath>${user.home}/Downloads/spigot-1.8.8-R0.1-SNAPSHOT-latest.jar</systemPath>
+            <systemPath>${user.home}/Downloads/Other/MC/spigot-1.8.8-R0.1-SNAPSHOT-latest.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>net.md_5</groupId>
             <artifactId>bungeecord</artifactId>
             <version>v1_8_R3</version>
             <scope>system</scope>
-            <systemPath>${user.home}/Downloads/BungeeCord.jar</systemPath>
+            <systemPath>${user.home}/Downloads/Other/MC/BungeeCord.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.github.ConnorLinfoot</groupId>
@@ -65,7 +58,5 @@
             <version>1.8.1</version>
         </dependency>
     </dependencies>
-
-
 
 </project>
